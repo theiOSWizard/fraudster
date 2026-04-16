@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Impostor Game — Room</title>
+  <meta name="description" content="Impostor Game room — chat, vote, and find the impostor!" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="stylesheet" href="/css/game.css" />
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🕵️</text></svg>" />
+</head>
+<body>
+
+<div id="toast-container"></div>
+
+<!-- ════════════════════════════════════════════════════════
+  GAME LAYOUT
+     ════════════════════════════════════════════════════════ -->
+<div class="game-layout" id="game-layout">
+
+  <!-- ── TOP BAR ──────────────────────────────────────────── -->
+  <header class="top-bar">
+    <div class="top-bar-left">
+      <div class="top-logo">🕵️ <span class="gradient-text">Impostor</span></div>
+      <div class="room-code-badge" id="room-code-badge" onclick="copyRoomLink()" title="Copy invite link">
+        <span class="code" id="room-code-display">------</span>
+        <span class="copy-hint">📋 copy link</span>
+      </div>
+      <span class="phase-badge phase-lobby" id="phase-badge">Lobby</span>
+      <div class="round-info hide-mobile" id="round-info" style="display:none;">
+        <span>⚔️</span>
+        <span id="round-display">Round 1</span>
+      </div>
+    </div>
+
+    <div class="top-bar-right">
+      <div class="player-self-tag">
+        <div class="avatar" id="self-avatar">?</div>
+        <span id="self-name-display">You</span>
+      </div>
+      <button class="btn btn-secondary btn-sm" id="btn-leave" onclick="leaveRoom()">🚪 Leave</button>
+    </div>
+  </header>
+
+  <!-- ── MAIN PANEL ─────────────────────────────────────────── -->
+  <main class="main-panel" id="main-panel">
+
+    <!-- My Card -->
+    <div class="my-card-section" id="my-card-section">
+      <div class="my-card card-waiting" id="my-card">
+        <div class="card-big-icon">🃏</div>
+        <div class="card-info">
+          <div class="card-role-label">Your Secret Card</div>
+          <div class="card-waiting-text" id="card-waiting-text">Waiting for the host to start the game…</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Players -->
+    <div class="players-section" id="players-section">
+      <div class="section-title">
+        <span>Players <span id="player-count-label"></span></span>
+        <span id="players-hint" class="text-muted text-xs"></span>
+      </div>
+      <div class="players-grid" id="players-grid">
+        <!-- injected by JS -->
+      </div>
+    </div>
+
+    <!-- Lobby waiting area (only visible in lobby) -->
+    <div class="lobby-waiting" id="lobby-waiting">
+      <div class="waiting-icon">⏳</div>
+      <h3 id="waiting-title">Waiting for players…</h3>
+      <p class="text-secondary text-sm" id="waiting-subtitle">Share the room code with your friends to invite them.</p>
+      <button class="btn btn-secondary btn-sm" onclick="copyRoomLink()">📋 Copy Invite Link</button>
+    </div>
+
+    <!-- Action Bar -->
+    <div class="action-bar" id="action-bar">
+      <!-- Host: Start Game -->
+      <button class="btn btn-success" id="btn-start-game" style="display:none;" onclick="startGame()">
+        🎮 Start Game
+      </button>
+      <!-- Host: Start Voting -->
+      <button class="btn btn-warning" id="btn-start-voting" style="display:none;" onclick="startVoting()">
+        🗳️ Open Voting
+      </button>
+      <!-- Host: Next Round (after reveal) -->
+      <button class="btn btn-primary" id="btn-next-round" style="display:none;" onclick="nextRound()">
+        🔄 Next Round
+      </button>
+      <!-- Host: Reset -->
+      <button class="btn btn-danger" id="btn-reset" style="display:none;" onclick="resetRoom()">
+        🔁 New Game
+      </button>
+      <!-- Spacer -->
+      <div style="flex:1"></div>
+      <!-- Player count indicator -->
+      <span class="text-muted text-sm" id="action-info"></span>
+    </div>
+
+  </main>
+
+  <!-- ── CHAT SIDE PANEL ─────────────────────────────────────── -->
+  <aside class="chat-panel" id="chat-panel">
+    <div class="chat-header">
+      <div class="chat-header-title">
+        💬 Discussion
+        <span class="unread-badge" id="unread-badge" style="display:none;">0</span>
+      </div>
+      <span class="text-muted text-xs" id="chat-phase-hint">Game not started</span>
+    </div>
+
+    <div class="chat-messages" id="chat-messages">
+      <div style="display:flex;align-items:center;justify-content:center;flex:1;flex-direction:column;gap:12px;color:var(--text-muted);font-size:0.85rem;text-align:center;padding:20px;">
+        <span style="font-size:2rem;">💬</span>
+        <span>Chat starts when the game begins!<br>Discuss clues and find the impostor.</span>
+      </div>
+    </div>
+
+    <div class="chat-input-area" id="chat-input-area">
+      <input
+        type="text"
+        class="chat-input"
+        id="chat-input"
+        placeholder="Type a hint or argument…"
+        maxlength="200"
+        disabled
+        autocomplete="off"
+        onkeydown="handleChatKey(event)"
+      />
+      <button class="chat-send-btn" id="chat-send-btn" disabled onclick="sendMessage()">➤</button>
+    </div>
+  </aside>
+</div>
+
+<!-- ════════════════════════════════════════════════════════
+  REVEAL MODAL
+     ════════════════════════════════════════════════════════ -->
+<div class="reveal-modal-overlay hidden" id="reveal-modal-overlay">
+  <div class="reveal-modal">
+
+    <!-- Winner Banner -->
+    <div id="winner-banner" class="winner-banner" style="display:none;"></div>
+
+    <!-- Revealed Card -->
+    <div class="reveal-card" id="reveal-card">
+      <div class="reveal-title">Card Revealed!</div>
+      <div class="reveal-name" id="reveal-player-name">Player</div>
+      <div class="reveal-role-icon" id="reveal-role-icon">🃏</div>
+      <div class="reveal-role-name" id="reveal-role-name">Role</div>
+      <div class="reveal-word" id="reveal-word"></div>
+    </div>
+
+    <!-- Vote Tally -->
+    <div class="vote-tally" id="vote-tally">
+      <!-- rows injected by JS -->
+    </div>
+
+    <!-- Actions -->
+    <div style="display:flex;gap:12px;flex-wrap:wrap;justify-content:center;">
+      <button class="btn btn-secondary" id="reveal-close-btn" onclick="closeRevealModal()">
+        📊 View Board
+      </button>
+      <button class="btn btn-primary" id="reveal-next-btn" style="display:none;" onclick="nextRound()">
+        🔄 Next Round
+      </button>
+      <button class="btn btn-danger" id="reveal-reset-btn" style="display:none;" onclick="resetRoom()">
+        🔁 New Game
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Loading Overlay -->
+<div id="loading-overlay" style="
+  position:fixed;inset:0;background:var(--bg-base);
+  display:flex;align-items:center;justify-content:center;
+  flex-direction:column;gap:20px;z-index:999;
+">
+  <div class="spinner"></div>
+  <p class="text-secondary">Connecting to room…</p>
+</div>
+
+<script src="/socket.io/socket.io.js"></script>
+<script src="/js/utils.js"></script>
+<script src="/js/game.js"></script>
+</body>
+</html>

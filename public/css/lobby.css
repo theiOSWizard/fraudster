@@ -1,0 +1,237 @@
+/* =========================================================
+   LOBBY PAGE STYLES
+   ========================================================= */
+
+/* ── Hero Screen ────────────────────────────────────────── */
+.hero-screen {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  position: relative;
+  z-index: 1;
+}
+
+.hero-content {
+  max-width: 620px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 32px;
+  text-align: center;
+}
+
+/* ── Logo ────────────────────────────────────────────────── */
+.hero-logo {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.logo-icon {
+  font-size: 4rem;
+  line-height: 1;
+  filter: drop-shadow(0 0 30px rgba(147,82,255,0.6));
+  animation: float 4s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-10px); }
+}
+
+.hero-title {
+  font-size: 3rem;
+  font-weight: 900;
+  letter-spacing: -0.02em;
+  line-height: 1;
+}
+
+.hero-sub {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-weight: 500;
+  margin-top: 4px;
+}
+
+/* ── Description ─────────────────────────────────────────── */
+.hero-desc {
+  font-size: 1rem;
+  color: var(--text-secondary);
+  line-height: 1.7;
+  max-width: 480px;
+}
+.hero-desc strong { color: var(--text-primary); }
+.hero-desc em { color: var(--accent); font-style: normal; }
+
+/* ── Role Legend ─────────────────────────────────────────── */
+.role-legend {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: center;
+  width: 100%;
+}
+
+.role-pill {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--bg-glass);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 14px 18px;
+  text-align: left;
+  flex: 1;
+  min-width: 150px;
+  backdrop-filter: blur(12px);
+  transition: border-color 0.3s, transform 0.2s;
+  cursor: default;
+}
+.role-pill:hover { transform: translateY(-2px); }
+
+.role-pill.civilian  { border-color: rgba(82,212,255,0.2); }
+.role-pill.impostor  { border-color: rgba(255,82,82,0.2);  }
+.role-pill.mrwhite   { border-color: rgba(245,245,245,0.15); }
+
+.role-pill.civilian:hover  { border-color: rgba(82,212,255,0.5); box-shadow: 0 4px 20px rgba(82,212,255,0.1); }
+.role-pill.impostor:hover  { border-color: rgba(255,82,82,0.5);  box-shadow: 0 4px 20px rgba(255,82,82,0.1);  }
+.role-pill.mrwhite:hover   { border-color: rgba(245,245,245,0.3); box-shadow: 0 4px 20px rgba(245,245,245,0.05); }
+
+.role-icon { font-size: 1.6rem; line-height: 1; }
+
+.role-name {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+.civilian .role-name  { color: var(--civilian); }
+.impostor .role-name  { color: var(--impostor); }
+.mrwhite  .role-name  { color: var(--mrwhite);  }
+
+.role-desc {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+/* ── Action Buttons ──────────────────────────────────────── */
+.hero-actions {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+/* ── Decorative Orbs ─────────────────────────────────────── */
+.orb {
+  position: fixed;
+  border-radius: 50%;
+  filter: blur(80px);
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.4;
+}
+.orb-1 { width: 400px; height: 400px; background: var(--accent); top: -100px; right: -100px; }
+.orb-2 { width: 300px; height: 300px; background: var(--accent-3); bottom: -80px; left: -80px; }
+.orb-3 { width: 250px; height: 250px; background: var(--accent-2); bottom: 100px; right: 20%; opacity: 0.2; }
+
+/* ── Modal ───────────────────────────────────────────────── */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.7);
+  backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  padding: 20px;
+}
+.modal-overlay.hidden { display: none; }
+
+.modal-box {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  width: 100%;
+  max-width: 480px;
+  position: relative;
+  box-shadow: var(--shadow-card), var(--shadow-glow);
+  overflow: hidden;
+}
+
+.modal-box::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--accent), var(--accent-2));
+}
+
+.modal-close {
+  position: absolute;
+  top: 16px; right: 16px;
+  background: var(--bg-glass);
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  width: 32px; height: 32px;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--text-secondary);
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: background 0.2s, color 0.2s;
+}
+.modal-close:hover { background: rgba(248,113,113,0.15); color: var(--danger); }
+
+.modal-header {
+  padding: 28px 28px 0;
+  text-align: center;
+}
+.modal-icon { font-size: 2.5rem; display: block; margin-bottom: 12px; }
+.modal-header h2 { font-size: 1.5rem; }
+.modal-header p { margin-top: 6px; }
+
+.modal-body {
+  padding: 24px 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.modal-footer {
+  padding: 0 28px 28px;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+/* ── Role explainer ──────────────────────────────────────── */
+.role-explainer {
+  background: var(--bg-glass);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 12px 16px;
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  min-height: 44px;
+}
+.role-explainer:empty { display: none; }
+
+/* ── Responsive ──────────────────────────────────────────── */
+@media (max-width: 600px) {
+  .hero-logo { flex-direction: column; gap: 12px; }
+  .hero-title { font-size: 2.2rem; }
+  .hero-actions { flex-direction: column; width: 100%; }
+  .hero-actions .btn { width: 100%; }
+  .role-legend { flex-direction: column; }
+  .form-row { grid-template-columns: 1fr; }
+}

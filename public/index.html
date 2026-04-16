@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Impostor Game — Social Deduction</title>
+  <meta name="description" content="Real-time multiplayer social deduction game. Create a room, share the link, find the Impostor!" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="stylesheet" href="/css/lobby.css" />
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🕵️</text></svg>" />
+</head>
+<body>
+
+<div id="toast-container"></div>
+
+<!-- ════════════════════════════════════════════════════════════
+  LANDING / HOME
+     ════════════════════════════════════════════════════════════ -->
+<main id="app">
+
+  <!-- Hero Section -->
+  <section id="hero-screen" class="hero-screen">
+    <div class="hero-content animate-up">
+
+      <!-- Logo / Title -->
+      <div class="hero-logo">
+        <div class="logo-icon">🕵️</div>
+        <div>
+          <h1 class="hero-title">Impostor <span class="gradient-text">Game</span></h1>
+          <p class="hero-sub">Social Deduction • Real Time • Multiplayer</p>
+        </div>
+      </div>
+
+      <!-- Description -->
+      <p class="hero-desc">
+        Each player receives a secret word card — but <strong>impostors</strong> get a <em>different</em> word,
+        and <strong>Mr. White</strong> gets <em>nothing</em>. Give clues, spot the liar, vote them out!
+      </p>
+
+      <!-- Role legend -->
+      <div class="role-legend">
+        <div class="role-pill civilian">
+          <span class="role-icon">🏙️</span>
+          <div>
+            <div class="role-name">Civilian</div>
+            <div class="role-desc">Knows the real word</div>
+          </div>
+        </div>
+        <div class="role-pill impostor">
+          <span class="role-icon">🎭</span>
+          <div>
+            <div class="role-name">Impostor</div>
+            <div class="role-desc">Has a similar, different word</div>
+          </div>
+        </div>
+        <div class="role-pill mrwhite">
+          <span class="role-icon">👁️</span>
+          <div>
+            <div class="role-name">Mr. White</div>
+            <div class="role-desc">No word — bluff or be caught</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="hero-actions">
+        <button class="btn btn-primary btn-lg" id="btn-open-create" onclick="showCreate()">
+          <span>🏠</span> Create Room
+        </button>
+        <button class="btn btn-secondary btn-lg" id="btn-open-join" onclick="showJoin()">
+          <span>🚪</span> Join Room
+        </button>
+      </div>
+
+      <!-- If arriving via link, show join form automatically -->
+    </div>
+
+    <!-- decorative orbs -->
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+  </section>
+
+  <!-- ── CREATE ROOM Modal ─────────────────────────────────── -->
+  <div id="modal-create" class="modal-overlay hidden" onclick="closeModalOutside(event,'modal-create')">
+    <div class="modal-box animate-scale">
+      <button class="modal-close" onclick="closeModal('modal-create')">✕</button>
+      <div class="modal-header">
+        <span class="modal-icon">🏠</span>
+        <h2>Create a Room</h2>
+        <p class="text-secondary text-sm">Configure your game and share the link</p>
+      </div>
+
+      <form id="form-create" onsubmit="handleCreate(event)">
+        <div class="modal-body">
+
+          <div class="form-group">
+            <label class="form-label" for="create-name">Your Name</label>
+            <input id="create-name" class="form-input" type="text"
+              placeholder="e.g. Detective Sam"
+              maxlength="24" required autocomplete="off" />
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="create-max">Max Players</label>
+              <select id="create-max" class="form-select">
+                <option value="4">4 Players</option>
+                <option value="5">5 Players</option>
+                <option value="6" selected>6 Players</option>
+                <option value="7">7 Players</option>
+                <option value="8">8 Players</option>
+                <option value="10">10 Players</option>
+                <option value="12">12 Players</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="create-roles">Role Config</label>
+              <select id="create-roles" class="form-select">
+                <option value="impostor">Impostor Only</option>
+                <option value="mrwhite">Mr. White Only</option>
+                <option value="both" selected>Both Roles</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Role config explainer -->
+          <div id="role-explainer" class="role-explainer"></div>
+
+        </div>
+
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-primary btn-full" id="create-submit-btn">
+            <span>🚀</span> Create Room
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ── JOIN ROOM Modal ───────────────────────────────────── -->
+  <div id="modal-join" class="modal-overlay hidden" onclick="closeModalOutside(event,'modal-join')">
+    <div class="modal-box animate-scale">
+      <button class="modal-close" onclick="closeModal('modal-join')">✕</button>
+      <div class="modal-header">
+        <span class="modal-icon">🚪</span>
+        <h2>Join a Room</h2>
+        <p class="text-secondary text-sm">Enter the room code and your name</p>
+      </div>
+
+      <form id="form-join" onsubmit="handleJoin(event)">
+        <div class="modal-body">
+          <div class="form-group">
+            <label class="form-label" for="join-code">Room Code</label>
+            <input id="join-code" class="form-input mono" type="text"
+              placeholder="e.g. A1B2C3D4"
+              maxlength="8" required autocomplete="off"
+              style="text-transform:uppercase; letter-spacing:0.15em; font-size:1.1rem;" />
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="join-name">Your Name</label>
+            <input id="join-name" class="form-input" type="text"
+              placeholder="e.g. Agent X"
+              maxlength="24" required autocomplete="off" />
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-primary btn-full" id="join-submit-btn">
+            <span>🚪</span> Join Room
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+</main>
+
+<script src="/js/utils.js"></script>
+<script src="/js/lobby.js"></script>
+</body>
+</html>
