@@ -149,7 +149,10 @@
       <div class="reveal-name" id="reveal-player-name">Player</div>
       <div class="reveal-role-icon" id="reveal-role-icon">🃏</div>
       <div class="reveal-role-name" id="reveal-role-name">Role</div>
-      <div class="reveal-word" id="reveal-word"></div>
+      <div style="display:flex; flex-direction:column; align-items:center; gap:8px;">
+        <div class="reveal-word" id="reveal-word" style="filter: blur(8px); transition: filter 0.3s; user-select: none; margin-bottom: 0;"></div>
+        <button class="btn btn-secondary" id="toggle-word-btn" onclick="toggleRevealWord()" style="padding: 4px 12px; font-size: 0.8rem;">👁️ Show Word</button>
+      </div>
     </div>
 
     <!-- Vote Tally -->

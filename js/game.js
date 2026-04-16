@@ -473,6 +473,12 @@ function showRevealModal(player, tally, winner) {
   else if (player.word) wordEl.innerHTML = `Their word was <strong>${escapeHtml(player.word)}</strong>`;
   else wordEl.textContent = '';
 
+  // Reset word reveal state
+  window.wordRevealed = false;
+  wordEl.style.filter = 'blur(8px)';
+  const toggleBtn = document.getElementById('toggle-word-btn');
+  if (toggleBtn) toggleBtn.innerHTML = '👁️ Show Word';
+
   // Vote tally
   const tallyEl = document.getElementById('vote-tally');
   tallyEl.innerHTML = '<div style="font-size:0.7rem;font-weight:700;letter-spacing:0.08em;color:var(--text-muted);margin-bottom:8px;text-transform:uppercase;">Vote Tally</div>';
@@ -512,6 +518,21 @@ function showRevealModal(player, tally, winner) {
 
 function closeRevealModal() {
   document.getElementById('reveal-modal-overlay').classList.add('hidden');
+}
+
+// ── Reveal Modal ──────────────────────────────────────────────────
+function toggleRevealWord() {
+  const wordEl = document.getElementById('reveal-word');
+  const btnEl = document.getElementById('toggle-word-btn');
+  window.wordRevealed = !window.wordRevealed;
+
+  if (window.wordRevealed) {
+    wordEl.style.filter = 'none';
+    if (btnEl) btnEl.innerHTML = '🙈 Hide Word';
+  } else {
+    wordEl.style.filter = 'blur(8px)';
+    if (btnEl) btnEl.innerHTML = '👁️ Show Word';
+  }
 }
 
 // ── Room utils ────────────────────────────────────────────────────
